@@ -19,12 +19,11 @@ android {
         versionName = "1.0.0-be"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a") }
+        buildConfigField("boolean", "BUILTIN_MODEL", "true")
     }
     // full — модель v5_5_ru в APK (app/src/full/assets/silero), lite — без неё: штатные голоса ставятся
     // паком ruvoice-pack-ru.zip, обновление приложения не тянет 85 МБ модели. applicationId и versionCode
     // одни — ставятся друг поверх друга, паки и настройки сохраняются.
-    // Белорусская сборка одна: модель лежит в APK (app/src/main/assets/silero/), паки голосов не нужны.
-    buildConfigField("boolean", "BUILTIN_MODEL", "true")
     buildFeatures { buildConfig = true }
     signingConfigs {
         localProps.getProperty("release.storeFile")?.let { path ->
