@@ -142,10 +142,14 @@ object BelNormalizer {
                 r == 0 -> append(pickOrd(h * 100, form))
                 r < 20 -> append(pick(ORD_NOM[r], ORD_GEN[r], ORD_LOC[r], form))
                 else -> {
-                    val t = TENS_ORD[r / 10 * 10]!!
-                    append(pick(t.first, t.second, t.third, form))
+                    // порядковым становится только последнее слово: 26 → «дваццаць шосты»,
+                    // а не «дваццаты шосты»; десятки целиком (20, 30…) берём из ORD-таблицы
                     val u = r % 10
-                    if (u > 0) {
+                    if (u == 0) {
+                        val t = TENS_ORD[r]!!
+                        append(pick(t.first, t.second, t.third, form))
+                    } else {
+                        append(TENS[r / 10])
                         append(' ')
                         append(pick(ORD_NOM[u], ORD_GEN[u], ORD_LOC[u], form))
                     }
@@ -192,6 +196,12 @@ object BelNormalizer {
         // латиницы в таблице символов модели нет вовсе — «FilmBell» раньше просто выпадало
         var s = Latin.translate(text).lowercase()
         s = s.replace(Regex("[’'`´ʼ]"), "")           // апостроф в таблице символов отсутствует
+        // даты и время — до единиц: у них внутри цифры со знаками (12.05.2026, 21:30)
+        s = BelNumbers.dates(s)
+        s = BelNumbers.times(s)
+        s = BelNumbers.abbreviations(s)               // «1999 г.» → «1999 год»
+        s = BelNumbers.units(s)                       // «3 км» → «тры кіламетры»
+        s = BelNumbers.standalone(s)                  // «руб.» без числа
         s = numberWords(s)
         s = s.replace('!', '.')                        // «!» модель не получает (служебный символ)
         s = s.replace(Regex("[«»„“”\"()\\[\\]{}<>]"), ", ")   // вставка — пауза, как в русском RuVoice
