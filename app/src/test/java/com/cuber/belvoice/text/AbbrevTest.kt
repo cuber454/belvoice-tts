@@ -1,0 +1,124 @@
+package com.cuber.belvoice.text
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class AbbrevTest {
+    @Test fun cyrillicWithoutVowelsSpelledByLetters() {
+        assertEquals("агент эф эс б+э вошёл", Abbrev.apply("агент ФСБ вошёл"))
+    }
+
+    @Test fun cyrillicWithVowelsFromSpellListSpelledByLetters() {
+        // С и Ш здесь читаются как их обычные имена из алфавита ("эс", "ша"), а не как в
+        // одном из примеров брифа ("сэ шэ +а") — тот пример расходится с таблицей имён букв
+        // и с примером ФСБ, где то же «С» даёт «эс»; таблица и остальные примеры совпадают
+        assertEquals("в сэ шэ +а", Abbrev.apply("в США"))
+    }
+
+    @Test fun initialsByLetterName() {
+        // «Джона Ф. Кеннеди» читалось «джонаф», пауза (жалоба 08.10.2026)
+        assertEquals("Джона эф Кеннеди", Abbrev.apply("Джона Ф. Кеннеди"))
+        assertEquals("эл энн Толстой", Abbrev.apply("Л. Н. Толстой"))
+        assertEquals("а эс Пушкин", Abbrev.apply("А.С. Пушкин"))
+    }
+
+    @Test fun sfryuSpelled() {
+        // с гласной «Ю» читалась словом «сфрю» (жалоба 08.10.2026)
+        assertEquals("эс эф ээр +ю", Abbrev.apply("СФРЮ"))
+    }
+
+    @Test fun singleVowelLetterNameGetsStressOnItself() {
+        assertEquals("сдал е гэ +э", Abbrev.apply("сдал ЕГЭ"))
+    }
+
+    @Test fun lowercaseWithoutVowelsSpelledByLetters() {
+        // расшифровки YouTube: аббревиатуры строчными
+        assertEquals("рост вэ вэ п+э, тарифы жэ ка х+а и энн дэ +эс", Abbrev.apply("рост ввп, тарифы жкх и ндс"))
+        assertEquals("эмм чэ +эс и ээр +эф", Abbrev.apply("Мчс и рф"))
+    }
+
+    @Test fun lowercaseWithVowelsFromSpellList() {
+        // жалоба 06.10.2026: «эвм» строчными читалось словом; междометие «ооо» и «ии» (род. от Ия) не трогаем
+        assertEquals("первые э вэ +эмм, о о +энн и вуз; ооо, ии", Abbrev.apply("первые эвм, оон и вуз; ооо, ии"))
+    }
+
+    @Test fun abbreviationsWithVowelsFromSpellList() {
+        assertEquals("а э +эс, о а +э, и п+э, у к+а", Abbrev.apply("АЭС, ОАЭ, ИП, УК"))
+    }
+
+    @Test fun lowercaseUnitsInterjectionsAndWordsLeftUntouched() {
+        assertEquals("хм, 5 км, см. гл. 2, тсс, ммм, в рот", Abbrev.apply("хм, 5 км, см. гл. 2, тсс, ммм, в рот"))
+    }
+
+    @Test fun cyrillicWordAcronymWithVowelsLeftUntouched() {
+        assertEquals("служил в НАТО", Abbrev.apply("служил в НАТО"))
+    }
+
+    @Test fun longUppercaseWordNotInAnyListLeftUntouched() {
+        assertEquals("ГЛАВА ПЕРВАЯ", Abbrev.apply("ГЛАВА ПЕРВАЯ"))
+    }
+
+    @Test fun latinTokensSpelledByLetters() {
+        assertEquals("порт ю эс б+и и сайт би би с+и", Abbrev.apply("порт USB и сайт BBC"))
+    }
+
+    @Test fun mixedCaseLatinWordLeftUntouched() {
+        assertEquals("iPhone", Abbrev.apply("iPhone"))
+    }
+
+    @Test fun exceptionListOverridesLetterByLetterReading() {
+        assertEquals("ги бэ дэ д+э", Abbrev.apply("ГИБДД"))
+        assertEquals("доверие к см+и падает, пишут см+и.", Abbrev.apply("доверие к СМИ падает, пишут СМИ."))
+    }
+
+    @Test fun latinExceptionsReadAsWord() {
+        assertEquals("вставьте с+им-карту, введите п+ин-код", Abbrev.apply("вставьте SIM-карту, введите PIN-код"))
+        assertEquals("две с+им и г+иф по вайф+ай", Abbrev.apply("две SIM и GIF по WIFI"))
+    }
+
+    @Test fun tokenGluedToDigitByHyphenLeftUntouched() {
+        assertEquals("С-300", Abbrev.apply("С-300"))
+    }
+
+    @Test fun twoLetterAbbreviationWithVowelInSpellList() {
+        assertEquals("тэ в+э", Abbrev.apply("ТВ"))
+    }
+
+    @Test fun spellListTokenGluedToDigitByHyphenLeftUntouched() {
+        // "С-300" не проверяет реальный сценарий: одиночная "С" короче минимальной длины 2
+        // и не матчится вообще. Здесь трёхбуквенная аббревиатура из списка "по буквам",
+        // приклеенная дефисом к цифре — именно то, что должен отсекать lookaround
+        assertEquals("ЕГЭ-2020", Abbrev.apply("ЕГЭ-2020"))
+    }
+
+    @Test fun integratedIntoPrepare() {
+        val allowed = "_~|!+,-.:;?абвгдежзийклмнопрстуфхцчшщъыьэюяё–… "
+        assertEquals("агент эф эс б+э и порт ю эс б+и.", Normalizer.prepare("Агент ФСБ и порт USB.", allowed))
+        assertEquals("служил в нато.", Normalizer.prepare("Служил в НАТО.", allowed))
+        assertEquals("нет с+им-карты, п+ин-код один два, три четыре.", Normalizer.prepare("Нет SIM-карты, PIN-код 1234.", allowed))
+        // «Wi-Fi» транслитом шло «ви-фи» (жалоба 30.09.2026)
+        assertEquals("по вай-фай, вайфай и вайфай, хай-фай.", Normalizer.prepare("По Wi-Fi, wifi и WiFi, hi-fi.", allowed))
+    }
+
+    @Test fun threeLettersWithEdgeVowelSpelled() {
+        assertEquals("испытания эл ка +и и тэ эмм +а", Abbrev.apply("испытания ЛКИ и ТМА"))
+        assertEquals("а ка +эс", Abbrev.apply("АКС"))
+    }
+
+    @Test fun edgeVowelWordsAndCapsHeadingsLeftUntouched() {
+        assertEquals("Он спросил: КТО там?", Abbrev.apply("Он спросил: КТО там?"))
+        assertEquals("ЛКИ ПРОШЛИ", Abbrev.apply("ЛКИ ПРОШЛИ"))
+    }
+
+    @Test fun cyrillicTechnicalCodes() {
+        val allowed = "_~|!+,-.:;?абвгдежзийклмнопрстуфхцчшщъыьэюяё–… "
+        assertEquals("эл ка +и ракеты +ээр-девять.", Normalizer.prepare("ЛКИ ракеты Р-9.", allowed))
+        assertEquals("восемь к+а семьдесят четыре и ээр т+э-один.", Normalizer.prepare("8К74 и РТ-1.", allowed))
+        assertEquals("+ээр-семь +а и у +ээр-сто +энн.", Normalizer.prepare("Р-7А и УР-100Н.", allowed))
+        assertEquals("т+э-семьдесят два б+э три, одиннадцать к+а шестьдесят пять +эмм.", Normalizer.prepare("Т-72Б3, 11К65М.", allowed))
+        assertEquals("а к+а-семьдесят четыре, газ-шестьдесят шесть, ту-сто пятьдесят четыре.",
+            Normalizer.prepare("АК-74, ГАЗ-66, Ту-154.", allowed))
+        assertEquals("сила сто ньютонов.", Normalizer.prepare("Сила 100Н.", allowed)) // число с единицей — не код
+        assertEquals("тэ эмм +а-ноль один +эмм и +ээр-ноль ноль семь.", Normalizer.prepare("ТМА-01М и Р-007.", allowed))
+    }
+}

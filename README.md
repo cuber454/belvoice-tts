@@ -256,8 +256,8 @@ adb install -r app/build/outputs/apk/full/debug/app-full-debug.apk
 ./gradlew :app:assembleFullDebug :app:assembleFullDebugAndroidTest
 adb install -r app/build/outputs/apk/full/debug/app-full-debug.apk
 adb install -r app/build/outputs/apk/androidTest/full/debug/app-full-debug-androidTest.apk
-adb shell am instrument -w -e class ru.kost.ruvoice.SileroModelsTest ru.kost.ruvoice.test/androidx.test.runner.AndroidJUnitRunner
-adb uninstall ru.kost.ruvoice.test
+adb shell am instrument -w -e class com.cuber.belvoice.SileroModelsTest com.cuber.belvoice.test/androidx.test.runner.AndroidJUnitRunner
+adb uninstall com.cuber.belvoice.test
 # Не `connectedAndroidTest`: он переустанавливает приложение и сносит словари и настройки пользователя.
 ```
 

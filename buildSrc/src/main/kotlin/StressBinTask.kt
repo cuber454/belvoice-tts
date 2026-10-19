@@ -6,7 +6,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import ru.kost.ruvoice.bin.StressBin
+import com.cuber.belvoice.bin.StressBin
 
 /** assets/silero/stress.bin из silero_ru.json и eyo_safe.txt (см. StressBin). */
 abstract class StressBinTask : DefaultTask() {

@@ -39,7 +39,7 @@
         app:endIconMode="custom"
         app:endIconDrawable="@drawable/ic_play"
         app:endIconContentDescription="@string/preview">
-        <ru.kost.ruvoice.CursorEditText
+        <com.cuber.belvoice.CursorEditText
             android:id="@+id/value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

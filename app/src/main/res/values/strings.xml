@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RuVoice TTS</string>
+    <string name="app_name">BelVoice</string>
 
     <!-- Вкладки -->
     <string name="tab_voice">Голос</string>

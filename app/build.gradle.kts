@@ -9,25 +9,22 @@ plugins {
 val localProps = Properties().apply { rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) } }
 
 android {
-    namespace = "ru.kost.ruvoice"
+    namespace = "com.cuber.belvoice"
     compileSdk = 35
     defaultConfig {
-        applicationId = "ru.kost.ruvoice"
+        applicationId = "com.cuber.belvoice"
         minSdk = 23
         targetSdk = 35
-        versionCode = 10000
-        versionName = "1.0.0"
+        versionCode = 10100
+        versionName = "1.0.0-be"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a") }
     }
     // full — модель v5_5_ru в APK (app/src/full/assets/silero), lite — без неё: штатные голоса ставятся
     // паком ruvoice-pack-ru.zip, обновление приложения не тянет 85 МБ модели. applicationId и versionCode
     // одни — ставятся друг поверх друга, паки и настройки сохраняются.
-    flavorDimensions += "model"
-    productFlavors {
-        create("full") { dimension = "model"; buildConfigField("boolean", "BUILTIN_MODEL", "true") }
-        create("lite") { dimension = "model"; buildConfigField("boolean", "BUILTIN_MODEL", "false"); versionNameSuffix = "-lite" }
-    }
+    // Белорусская сборка одна: модель лежит в APK (app/src/main/assets/silero/), паки голосов не нужны.
+    buildConfigField("boolean", "BUILTIN_MODEL", "true")
     buildFeatures { buildConfig = true }
     signingConfigs {
         localProps.getProperty("release.storeFile")?.let { path ->
@@ -55,7 +52,7 @@ android {
     androidResources {
         noCompress += listOf("ptl", "pte", "json", "bin")
         // silero_ru.json и eyo_safe.txt в APK не нужны: приложение читает собранный из них stress.bin (задача stressBin)
-        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!silero_ru.json:!eyo_safe.txt"
+        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!silero_be.json:!eyo_be.txt"
     }
     testOptions { unitTests.isReturnDefaultValues = true }
     // libfbjni/libc++_shared есть и в pytorch_android_lite, и в executorch; из lite годятся обоим
@@ -64,8 +61,8 @@ android {
 
 // Словари ударений и «ё» одним бинарным файлом: mmap вместо разбора json при запуске процесса (StressBin)
 val stressBin = tasks.register<StressBinTask>("stressBin") {
-    json.set(file("src/main/assets/silero/silero_ru.json"))
-    eyo.set(file("src/main/assets/eyo_safe.txt"))
+    json.set(file("src/main/assets/silero/silero_be.json"))
+    eyo.set(file("src/main/assets/eyo_be.txt"))
     outDir.set(layout.buildDirectory.dir("generated/stressBin"))
 }
 androidComponents { onVariants { it.sources.assets?.addGeneratedSourceDirectory(stressBin, StressBinTask::outDir) } }
