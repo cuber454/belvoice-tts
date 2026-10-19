@@ -660,11 +660,15 @@ class SileroTtsService : TextToSpeechService() {
                         if (!screenReader && rules.on("verbose_log")) note("в модель: «${visible(forModel)}»")
                         val seq = sym.sequence(forModel)
                         // интонация вопросов/восклицаний и логическое ударение есть только у v5_5_ru
-                        val typeIds = if (voice.types) SentenceType.typeIds(prepared, SentenceType.classify(marks.text, d, rules), seq.size, d) else LongArray(seq.size)
+                        val sentenceType = SentenceType.classify(marks.text, d, rules)
+                        val typeIds = if (voice.types) SentenceType.typeIds(prepared, sentenceType, seq.size, d) else LongArray(seq.size)
                         val curSpeakerId = if (seg.speech) quoteSpeakerId ?: speakerId else speakerId
                         val curPitch = pitch * (if (seg.speech) quotePitch else 1f)
                         val al = Marks.align(marks.words, spoken, seq.size, sym)
                         for (i in al.pitches.indices) al.pitches[i] *= curPitch
+                        // Белорусский голос: у CIS-модели нет входа «тип предложения», поэтому интонацию
+                        // вопроса и восклицания рисуем контуром высоты. Сила — из «силы логического ударения».
+                        if (d.lang == "be" && rules.on("intonation")) Intonation.apply(sentenceType, rules.focus, al.pitches)
                         // seq = sos + spoken + eos, индексы совпадают с durs напрямую.
                         // seq[1] — первый символ сегмента: тире перед репликой («— Привет»), пауза там — тишина до слов.
                         // Тире после знака («, —», «! —») — авторская ремарка, паузу уже дал сам знак.

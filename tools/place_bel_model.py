@@ -11,7 +11,7 @@ import zipfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 PACK = os.path.join(ROOT, "dist", "ruvoice-pack-cis_be.zip")
-ASSETS = os.path.join(ROOT, "app/src/main/assets/silero")
+ASSETS = os.path.join(ROOT, "app/src/full/assets/silero")   # модель только в полной сборке
 FILES = ("tts_mel.ptl", "head.ptl", "backbone.pte")
 
 

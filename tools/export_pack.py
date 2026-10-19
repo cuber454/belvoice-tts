@@ -18,12 +18,14 @@ PACKS = {
     'cis_ru': ('v5_cis_base_nostress.pt', lambda s: s.startswith('ru_'), False, 'Русские голоса Silero v5 CIS — экспериментально', 'MIT',
                'https://models.silero.ai/models/tts/ru/v5_cis_base_nostress.pt', 'ru_alexandr'),
     # Белорусская сборка: те же веса, три родных диктора bel_* (bel_larisa, bel_anatoliy, bel_dmitriy).
-    'cis_be': ('v5_cis_base_nostress.pt', lambda s: not s.startswith('ru_'), False, 'Беларускія галасы Silero v5 CIS — эксперыментальна', 'MIT',
+    'cis_be': ('v5_cis_base_nostress.pt', lambda s: s.startswith('bel_'), False, 'Беларускія галасы Silero v5 CIS — эксперыментальна', 'MIT',
                'https://models.silero.ai/models/tts/ru/v5_cis_base_nostress.pt', 'bel_larisa'),
-    'ru': ('v5_5_ru.pt', lambda s: True, True, 'Штатные голоса Silero v5.5', 'CC BY-NC-SA 4.0',
+    # Остальные дикторы той же модели: те же веса, только номера другие. Ставятся отдельным паком на докачку.
+    'cis_be_extra': ('v5_cis_base_nostress.pt', lambda s: (not s.startswith('ru_')) and (not s.startswith('bel_')), False, 'Беларуская сборка: дадатковыя галасы (28 дыктараў CIS)', 'MIT',
+               'https://models.silero.ai/models/tts/ru/v5_cis_base_nostress.pt', 'ukr_igor'),    'ru': ('v5_5_ru.pt', lambda s: True, True, 'Штатные голоса Silero v5.5', 'CC BY-NC-SA 4.0',
            'https://models.silero.ai/models/tts/ru/v5_5_ru.pt', 'xenia'),
 }
-TEXT = 'прыв+ет, м+ір.' if len(sys.argv) > 1 and sys.argv[1] == 'cis_be' else 'прив+ет, м+ир.'
+TEXT = 'прыв+ет, м+ір.' if len(sys.argv) > 1 and str(sys.argv[1]).startswith('cis_be') else 'прив+ет, м+ир.'
 
 
 def tts_args(pk, text, sr=48000):
@@ -50,7 +52,7 @@ if __name__ == '__main__':
     assert (pk.accentor is None) == (not types), 'акцентор не соответствует types'
     tts = pk.models[0]
     speakers = {s: i for s, i in pk.speaker_to_ids[0].items() if keep(s)}
-    assert len(speakers) == {'cis_ru': 29, 'cis_be': 31, 'ru': 5}[pack_id], len(speakers)
+    assert len(speakers) == {'cis_ru': 29, 'cis_be': 3, 'cis_be_extra': 28, 'ru': 5}[pack_id], len(speakers)
     pack = {
         'format': FORMAT, 'id': pack_id, 'title': title, 'license': lic,
         'source': source,
