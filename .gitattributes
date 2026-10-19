@@ -1,0 +1,6 @@
+# Скрипты обязаны быть с LF: WSL/bash отвергает CRLF («invalid option» и «\r» в путях).
+*.sh text eol=lf
+*.py text eol=lf
+*.kt text eol=lf
+*.kts text eol=lf
+*.md text eol=lf
