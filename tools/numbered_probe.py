@@ -47,7 +47,16 @@ def main():
     if len(sys.argv) < 3:
         sys.exit(__doc__)
     out = sys.argv[1]
-    items = [l.strip() for l in open(sys.argv[2], encoding="utf-8") if l.strip() and not l.startswith("#")]
+    items = []
+    for l in open(sys.argv[2], encoding="utf-8"):
+        l = l.strip()
+        if not l or l.startswith("#"):
+            continue
+        if "|" in l:
+            sp, txt = l.split("|", 1)
+            items.append((sp.strip(), txt.strip()))
+        else:
+            items.append((None, l))
     if len(items) > len(NUMBERS) - 1:
         sys.exit(f"максимум {len(NUMBERS) - 1} вариантов")
 
@@ -55,13 +64,14 @@ def main():
     acc = _load_for_lite_interpreter(ACCENTOR)
 
     pieces = []
-    for i, item in enumerate(items, start=1):
+    for i, (sp, item) in enumerate(items, start=1):
         number = NUMBERS[i]
         word = mark(acc, item)
-        print(f"{i:2d}. {number:14s} {word}")
+        speaker = sp or SPEAKER
+        print(f"{i:2d}. {number:14s} {speaker:13s} {word}")
         for text in (number.rstrip("."), word):
             with torch.no_grad():
-                audio = big.apply_tts(text=text, speaker=SPEAKER, sample_rate=SR)
+                audio = big.apply_tts(text=text, speaker=speaker, sample_rate=SR)
             pieces.append(np.asarray(audio, dtype="float32").reshape(-1))
             pieces.append(np.zeros(int(0.35 * SR), dtype="float32"))
         pieces.append(np.zeros(int(0.9 * SR), dtype="float32"))

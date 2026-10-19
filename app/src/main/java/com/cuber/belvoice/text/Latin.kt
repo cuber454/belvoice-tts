@@ -18,7 +18,7 @@ object Latin {
         "iphone" to "айф+он",
         "ipad" to "айп+ад",
         "android" to "андр+оід",
-        "google" to "г+угл",
+        "google" to "гугл",
         "youtube" to "ют+уб",
         "telegram" to "тэлегр+ам",
         "whatsapp" to "вац+ап",
