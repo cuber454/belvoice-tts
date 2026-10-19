@@ -86,7 +86,7 @@
     <string name="quote_pitch_a11y">Высота прямой речи</string>
     <string name="section_preview">Пробное чтение</string>
     <string name="preview_hint">Текст для прослушивания</string>
-    <string name="preview_text" translatable="false">Поезд отходил в 21:30, и до вокзала оставалось около 3 км.\n— Успеем, — сказала она тихо. — Замок на воротах ещё не заперли.</string>
+    <string name="preview_text" translatable="false">Добры дзень! Гэта праверка голасу: чытаю па-беларуску.\nСёння 2026 год, у бібліятэцы 128 кніг і 3 тамы. Дзе ж ключ ад замка? Паспеем да цягніка!</string>
     <string name="preview">Прослушать</string>
     <string name="stop">Стоп</string>
     <!-- «Разбор»: пометки словами — их слышно и в TalkBack -->
