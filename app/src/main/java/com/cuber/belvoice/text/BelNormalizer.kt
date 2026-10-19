@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: CC-BY-NC-SA-4.0
+// Белорусский текстовый слой для RuVoice TTS (см. LICENSE репозитория).
 package com.cuber.belvoice.text
 
 /**
@@ -92,24 +94,28 @@ object BelNormalizer {
     }
 
     /** Количественное: 1234 → «адна тысяча дзвесце трыццаць чатыры». */
-    fun cardinal(n: Long): String {
-        if (n < 0) return "мінус " + cardinal(-n)
+    fun cardinal(n: Long): String = count(n, fem = false)
+
+    /** То же для единиц женского рода («тона», «капейка», «штука», «тысяча»): 2 → «дзве», а не «два». */
+    fun cardinalFem(n: Long): String = count(n, fem = true)
+
+    /** Слово «тысяча» по числу: 1 → тысяча, 2–4 → тысячы, 5+ → тысяч. */
+    private fun thousandWord(n: Int) = when {
+        n % 10 == 1 && n % 100 != 11 -> "тысяча"
+        n % 10 in 2..4 && n % 100 !in 12..14 -> "тысячы"
+        else -> "тысяч"
+    }
+
+    private fun count(n: Long, fem: Boolean): String {
+        if (n < 0) return "мінус " + count(-n, fem)
         if (n == 0L) return UNITS[0]
         val parts = ArrayList<String>()
         val millions = (n / 1_000_000).toInt()
         val thousands = ((n / 1000) % 1000).toInt()
         val rest = (n % 1000).toInt()
         if (millions > 0) parts.add(under1000(millions) + " мільён")
-        if (thousands > 0) {
-            val t = under1000(thousands, fem = true)
-            val word = when {
-                thousands % 10 == 1 && thousands % 100 != 11 -> "тысяча"
-                thousands % 10 in 2..4 && thousands % 100 !in 12..14 -> "тысячы"
-                else -> "тысяч"
-            }
-            parts.add("$t $word")
-        }
-        if (rest > 0) parts.add(under1000(rest))
+        if (thousands > 0) parts.add(under1000(thousands, fem = true) + " " + thousandWord(thousands))
+        if (rest > 0) parts.add(under1000(rest, fem = fem))
         return parts.joinToString(" ")
     }
 

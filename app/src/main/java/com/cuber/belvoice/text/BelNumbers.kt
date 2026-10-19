@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: CC-BY-NC-SA-4.0
+// Белорусский текстовый слой для RuVoice TTS (см. LICENSE репозитория).
 package com.cuber.belvoice.text
 
 /**
@@ -113,13 +115,18 @@ object BelNumbers {
         "$" to Triple("долар", "долары", "долараў"),
         "€" to Triple("еўра", "еўра", "еўра"),
     )
-    /** «3 км» → «тры кіламетры», «5 %» → «пяць працэнтаў», «2 руб.» → «два рублі». */
+    /** Единицы женского рода: счётное слово согласуется с ними, а не наоборот. */
+    private val FEM_UNITS = setOf("т", "шт", "кап", "тыс")
+
+    /** «3 км» → «тры кіламетры», «5 %» → «пяць працэнтаў», «2 руб.» → «два рублі», «2 т» → «дзве тоны». */
     fun units(text: String): String = NUMBER_UNIT.replace(text) { m ->
         val raw = m.groupValues[1].replace("\u00A0", "").replace(" ", "")
         val n = raw.toLongOrNull() ?: return@replace m.value
         val rest = m.groupValues[2].lowercase()
         val u = UNITS[rest] ?: return@replace m.value
-        "${BelNormalizer.cardinal(n)} ${plural(n, u.first, u.second, u.third)}"
+        // единицы женского рода: «дзве тоны», «дзве капейкі», «дзве штукі», «дзве тысячы», а не «два»
+        val num = if (rest in FEM_UNITS) BelNormalizer.cardinalFem(n) else BelNormalizer.cardinal(n)
+        "$num ${plural(n, u.first, u.second, u.third)}"
     }
 
     // ---- сокращения ----
@@ -151,7 +158,8 @@ object BelNumbers {
     private val YEAR_G = Regex("""(?<!\d)(\d{3,4})\s*г\.""")
     private val GG = Regex("""(?<!\p{L})гг\.?""", RegexOption.IGNORE_CASE)
     private val NUMBER_UNIT = Regex(
-        // длинные варианты раньше коротких: иначе «5 тыс.» разобралось бы как «5 т» (тоны)
-        """(?<![\d.,])(\d{1,9}(?:[ \u00A0]\d{3})*)\s*(км/г|тыс|млрд|млн|руб|кап|км|см|мм|кг|мл|мг|м2|м²|га|шт|°C|%|₽|\$|€|м|л|г|т)\.?""",
+        // длинные варианты раньше коротких: иначе «5 тыс.» разобралось бы как «5 т» (тоны).
+        // Справа не буква: иначе «2026 год» — это «2026 г» (граммы) и «од», а «3 тамы» — «3 т» (тоны) и «амы».
+        """(?<![\d.,])(\d{1,9}(?:[ \u00A0]\d{3})*)\s*(км/г|тыс|млрд|млн|руб|кап|км|см|мм|кг|мл|мг|м2|м²|га|шт|°C|%|₽|\$|€|м|л|г|т)\.?(?![\p{L}])""",
         RegexOption.IGNORE_CASE)
 }
