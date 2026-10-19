@@ -49,10 +49,12 @@ class Rules(val off: Set<String> = emptySet(), val maxLen: Int = MAX_LEN_DEFAULT
         const val MAX_LEN_MAX = 900
         /** Длина первого куска запроса при fast_start, ~5 с звука. */
         const val FAST_START_LEN = 100
-        // focus_embedding модели — 4 строки (0..3), как intensity в apply_tts
-        const val FOCUS_DEFAULT = 2   // для белорусской сборки это и сила интонации вопроса/восклицания
+        // В белорусской сборке логического ударения нет (у CIS-модели нет входа focus_mask), поэтому это ЧИСТО
+        // сила интонации вопроса и восклицания: 1 — едва заметно, 3 — заметно, 5 — нарочито.
+        // Потолок 5, а не 3: просьба Сержа 19.10.2026 — «попробовать поднять до пяти».
+        const val FOCUS_DEFAULT = 2
         const val FOCUS_MIN = 1
-        const val FOCUS_MAX = 3
+        const val FOCUS_MAX = Intonation.MAX_LEVEL
 
         /** Правила, выключенные по умолчанию. */
         val DEFAULT_OFF = setOf("symbol_names", "fast_start", "drop_links", "drop_emails", "drop_images", "en_proxy_books", "en_proxy_sr", "letter_echo_all", LETTER_ECHO, "verbose_log", "sr_link_word", LINK_WORD, SCREEN_READER)

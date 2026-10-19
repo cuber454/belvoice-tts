@@ -51,4 +51,27 @@ class IntonationTest {
         assertTrue("сила 3 выше силы 1: $weak / $strong", strong > weak)
         assertEquals(1f, coefs("general_q", 40, 1)[0])
     }
+
+    @Test
+    fun fiveLevelsGrowAndStopAtFive() {
+        val ends = (1..Intonation.MAX_LEVEL).map { coefs("general_q", 40, it)[39] }
+        assertEquals(5, Intonation.MAX_LEVEL)
+        for (i in 1 until ends.size) assertTrue("уровень ${i + 1} выше уровня $i: ${ends[i - 1]} / ${ends[i]}", ends[i] > ends[i - 1])
+        // выше пяти не поднимаем: значение упирается в предел, а не растёт бесконечно
+        assertEquals(ends.last(), coefs("general_q", 40, 9)[39])
+    }
+
+    @Test
+    fun fifthLevelExclamation() {
+        val p = coefs("exclam", 40, 5)
+        assertTrue("пятый уровень заметно выше: ${p[0]}", p[0] > 1.25f)
+        assertTrue("и падает в конце: ${p[39]}", p[39] < p[0])
+    }
+
+    @Test
+    fun rulesAllowFive() {
+        assertEquals(5, Rules(focus = 5).focusLevel)
+        assertEquals(5, Rules(focus = 9).focusLevel)   // выше предела — предел
+        assertEquals(1, Rules(focus = 0).focusLevel)
+    }
 }

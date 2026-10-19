@@ -467,7 +467,7 @@
     <string name="rule_focus">逻辑重音</string>
     <string name="rule_focus_hint">星号中的单词（文本或替换中的 «Он *не* пришёл»，SSML 中的 &lt;emphasis&gt;）由模型用语调突出。关闭时只去掉星号。</string>
     <string name="focus_level">突出强度</string>
-    <string name="focus_level_hint">范围 1 到 3：1 表示比相邻的词稍明显，3 表示最强。对所有突出的单词生效。</string>
+    <string name="focus_level_hint">范围 1 到 5。在白俄罗斯语版本中，这是疑问句和感叹句语调的强度：1 几乎察觉不到，3 明显，5 刻意。俄语引擎用它设置逻辑重音的强度。</string>
     <string name="rule_exclaim">短感叹句中的重音</string>
     <string name="rule_exclaim_hint">«Эй, вы!»、«Бам!»（以 «!» 结尾、不超过两个词）在最后一个词上加逻辑重音，否则模型会读得短促平淡。强度与上方的逻辑重音相同。</string>
     <string name="rule_question">无动词疑问句中的重音</string>

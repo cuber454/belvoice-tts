@@ -466,7 +466,7 @@
     <string name="rule_focus">Word emphasis</string>
     <string name="rule_focus_hint">A word in asterisks («Он *не* пришёл» in the text or in a replacement, &lt;emphasis&gt; in SSML) is stressed by the model with intonation. When off, the asterisks are just removed.</string>
     <string name="focus_level">Emphasis strength</string>
-    <string name="focus_level_hint">From 1 to 3: 1 is slightly stronger than the neighboring words, 3 is the strongest. Applies to all emphasized words.</string>
+    <string name="focus_level_hint">From 1 to 5. In the Belarusian build this is how strong question and exclamation intonation is: 1 is barely noticeable, 3 is noticeable, 5 is deliberate. For the Russian engine it sets the strength of word emphasis.</string>
     <string name="rule_exclaim">Emphasis in a short exclamation</string>
     <string name="rule_exclaim_hint">«Эй, вы!», «Бам!» (up to two words ending in «!») are read with emphasis on the last word, otherwise the model says them short and flat. Strength is the same as for word emphasis above.</string>
     <string name="rule_question">Emphasis in a question without a verb</string>

@@ -16,6 +16,16 @@ package com.cuber.belvoice.text
  */
 object Intonation {
 
+    /** Предел силы: 1 — едва заметно, 5 — нарочито. Настройка «Сила выделения» доходит до 5. */
+    const val MAX_LEVEL = 5
+
+    /** Подъём тона к концу фразы по силе: доля от единицы. */
+    private val RISE = floatArrayOf(0f, 0.16f, 0.28f, 0.40f, 0.52f, 0.64f)
+
+    /** Восклицание: насколько выше вся фраза и насколько падает самый конец. */
+    private val EXCL_BASE = floatArrayOf(0f, 1.05f, 1.11f, 1.17f, 1.23f, 1.29f)
+    private val EXCL_DROP = floatArrayOf(0f, 0.10f, 0.20f, 0.30f, 0.40f, 0.50f)
+
     /** Короче этого числа символов контур не применяем. */
     private const val MIN_CHARS = 8
 
@@ -29,7 +39,7 @@ object Intonation {
     fun apply(type: String, strength: Int, pitches: FloatArray) {
         val n = pitches.size
         if (n < MIN_CHARS) return
-        val level = strength.coerceIn(1, 3)
+        val level = strength.coerceIn(1, MAX_LEVEL)
         when {
             type in RISING -> rise(pitches, level)
             type == "exclam" -> exclaim(pitches, level)
@@ -40,7 +50,7 @@ object Intonation {
     /** Вопрос: плавный подъём на последней трети фразы. */
     private fun rise(pitches: FloatArray, level: Int) {
         val n = pitches.size
-        val amp = when (level) { 1 -> 0.16f; 2 -> 0.28f; else -> 0.40f }
+        val amp = RISE[level]
         val tail = maxOf(3, (n * 0.35f).toInt())
         val cut = n - tail
         for (i in cut until n) {
@@ -52,8 +62,8 @@ object Intonation {
     /** Восклицание: весь кусок выше, в самом конце — спад. */
     private fun exclaim(pitches: FloatArray, level: Int) {
         val n = pitches.size
-        val base = when (level) { 1 -> 1.05f; 2 -> 1.11f; else -> 1.17f }
-        val drop = when (level) { 1 -> 0.10f; 2 -> 0.20f; else -> 0.30f }
+        val base = EXCL_BASE[level]
+        val drop = EXCL_DROP[level]
         for (i in 0 until n) pitches[i] *= base
         val last = maxOf(3, (n * 0.12f).toInt())
         for (i in n - last until n) {
