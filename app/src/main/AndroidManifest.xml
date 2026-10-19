@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- androidx.core объявляет служебное разрешение для динамических ресиверов; их у нас нет -->
+    <permission android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" tools:node="remove" />
+    <uses-permission android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" tools:node="remove" />
+    <!-- Сервис на время чтения становится foreground, иначе при погасшем экране
+         система уводит процесс в sched group Restricted и синтез не успевает за воспроизведением. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Службы доступности видны движку (Android 11+): по ним ScreenReaders узнаёт экранного чтеца
+         среди отправителей запросов. Разрешения это не даёт — только видимость пакетов. -->
+    <queries>
+        <intent>
+            <action android:name="android.accessibilityservice.AccessibilityService" />
+        </intent>
+        <!-- Другие движки синтеза — для английских фраз (правило «Английский другим движком», EnglishProxy) -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+    <application
+        android:name=".App"
+        android:localeConfig="@xml/locales_config"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:largeHeap="true"
+        android:theme="@style/Theme.RuVoice">
+        <service
+            android:name=".SileroTtsService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.TTS_SERVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.speech.tts" android:resource="@xml/tts_engine" />
+        </service>
+        <!-- Своя пустая задача: Jieshuo при каждом подключении к движку шлёт CHECK_TTS_DATA с NEW_TASK|CLEAR_TASK,
+             и в задаче приложения это закрывало открытые настройки RuVoice. -->
+        <activity android:name=".CheckVoiceDataActivity" android:exported="true" android:theme="@android:style/Theme.NoDisplay"
+            android:taskAffinity="" android:excludeFromRecents="true" android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.speech.tts.engine.CHECK_TTS_DATA" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- configChanges: диалоги ударений/замен не DialogFragment, при пересоздании окна
+             поворотом они теряли бы ввод — поворот обрабатываем сами (ничего не делаем). -->
+        <activity android:name=".SettingsActivity" android:exported="true" android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.speech.tts.engine.CONFIGURE_ENGINE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.speech.tts.engine.INSTALL_TTS_DATA" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- Плитка в шторке: переключение профиля настроек (Android 7+) -->
+        <service android:name=".ProfileTileService" android:exported="true" android:label="@string/tile_label"
+            android:icon="@drawable/ic_profile" android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <!-- Язык из диалога «Язык и тема» на Android 6–12: AppCompat хранит его сам (на 13+ — система) -->
+        <service android:name="androidx.appcompat.app.AppLocalesMetadataHolderService" android:enabled="false" android:exported="false">
+            <meta-data android:name="autoStoreLocales" android:value="true" />
+        </service>
+        <activity android:name=".RulesActivity" android:exported="false" android:label="@string/rules_title" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".TroubleshootActivity" android:exported="false" android:label="@string/troubleshoot_title" />
+        <activity android:name=".AboutActivity" android:exported="false" android:label="@string/about_title" />
+    </application>
+</manifest>

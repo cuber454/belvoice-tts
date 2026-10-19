@@ -1,0 +1,175 @@
+package ru.kost.ruvoice.text
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Test
+import ru.kost.ruvoice.TestData
+
+/** Тесты на падеж числительного по предлогу-триггеру и по окончанию соседнего слова (task 19b). */
+class CasesTest {
+    private fun n(s: String) = Normalizer.numbers(s)
+    private fun p(s: String) = Normalizer.prepare(s, TestData.data().allowed)
+
+    @Test fun genitiveByTrigger() {
+        assertEquals("около пятисот рублей", n("около 500 рублей"))
+        assertEquals("более пяти лет", n("более 5 лет"))
+        assertEquals("более чем ста лет", n("более чем 100 лет"))
+        assertEquals("у трёх сестёр", n("у 3 сестёр"))
+    }
+
+    @Test fun genitiveRangeOtDo() {
+        assertEquals("от одного до пяти дней", n("от 1 до 5 дней"))
+    }
+
+    @Test fun dativeByTrigger() {
+        assertEquals("к двадцати пяти годам", n("к 25 годам"))
+    }
+
+    @Test fun instrumentalRangeMezhdu() {
+        assertEquals("между пятью и десятью", n("между 5 и 10"))
+    }
+
+    @Test fun instrumentalByEnding() {
+        assertEquals("с пятьюстами рублями", n("с 500 рублями"))
+    }
+
+    @Test fun prepositionalByEnding() {
+        assertEquals("в пяти случаях", n("в 5 случаях"))
+    }
+
+    @Test fun prepositionalByTrigger() {
+        assertEquals("при двадцати градусах", n("при 20 градусах"))
+        assertEquals("о трёх мушкетёрах", n("о 3 мушкетёрах"))
+    }
+
+    @Test fun rangeSPoWithoutMonth() {
+        assertEquals("с пяти по десять", n("с 5 по 10"))
+    }
+
+    @Test fun rangeSPoWithMonth() {
+        assertEquals("с пятого по десятое мая", n("с 5 по 10 мая"))
+    }
+
+    @Test fun dayRangeBeforeMonth() {
+        assertEquals("с третьего по пятнадцатое мая", n("3-15 мая"))
+        assertEquals("с третьего по пятнадцатое мая", n("3–15 мая"))
+        assertEquals("с седьмого по девятое апреля", n("7…9 апреля"))
+        assertEquals("с третьего по пятнадцатое мая", n("с 3-15 мая"))
+        assertEquals("со второго по пятое мая", n("2-5 мая"))
+        assertEquals("до седьмого — девятого апреля", n("до 7-9 апреля"))
+        assertEquals("на третье — пятнадцатое мая", n("на 3-15 мая"))
+        assertEquals("к седьмому — девятому апреля", n("к 7-9 апреля"))
+    }
+
+    @Test fun centuryInWordsIsOrdinal() {   // жалоба 15.10.2026: «уже 18 века» читалось «восемнадцать века»
+        assertEquals("в самый конец, но уже восемнадцатого века.", n("в самый конец, но уже 18 века."))
+        assertEquals("в девятнадцатом веке", n("в 19 веке"))
+        assertEquals("два века", n("2 века"))   // на 2–4 — количество
+    }
+
+    @Test fun indeclinableFemaleNameWithRoman() {
+        assertEquals("Элизабет первая", n("Элизабет I"))
+    }
+
+    @Test fun ordinalBeforeRankNoun() {
+        assertEquals("ученик первого класса", n("ученик 1 класса"))
+        assertEquals("из первого класса", n("из 1 класса"))
+        assertEquals("до пятого класса", n("до 5 класса"))
+        assertEquals("ученица двадцать первого класса", n("ученица 21 класса"))
+        assertEquals("стоимость двадцать пятой категории", n("стоимость 25 категории"))
+    }
+
+    @Test fun hyphenRangeDoesNotBecomeMinus() {
+        // финальный fix-раунд п.1: дефис в диапазоне «N-M» — не минус, только когда перед ним
+        // нет буквы/цифры («минус» остаётся у «-5», см. RulesTest.degrees).
+        assertEquals("около десяти-пятнадцати минут", n("около 10-15 минут"))
+        assertEquals("более двух-трёх раз", n("более 2-3 раз"))
+        assertEquals("Ту-сто пятьдесят четыре", n("Ту-154"))
+    }
+
+    @Test fun temBoleeIsNotTrigger() {
+        assertEquals("тем более пять человек", n("тем более 5 человек"))
+    }
+
+    @Test fun accusativeFeminineEndingOne() {
+        assertEquals("одну книгу", n("1 книгу"))
+        assertEquals("двадцать одну минуту", n("21 минуту"))
+    }
+
+    @Test fun nominativeFeminineTwo() {
+        assertEquals("две книги", n("2 книги"))
+        assertEquals("два стола", n("2 стола"))
+    }
+
+    @Test fun unitAfterV() {
+        // «в 5 км (от города)» — предложный; «весом в 300 г», «в 3 ч» — винительный = именительный.
+        assertEquals("в пяти километрах", n("в 5 км"))
+        assertEquals("в ста граммах продукта", n("в 100 г продукта"))
+        assertEquals("весом в триста граммов", n("весом в 300 г"))
+        assertEquals("в три часа", n("в 3 ч"))
+    }
+
+    @Test fun unitAfterGenitiveTrigger() {
+        // task 28 п.5: родительный триггер перед числом с единицей — и число, и единица в Р.п.
+        assertEquals("около трёх километров", n("около 3 км"))
+        assertEquals("до двух километров", n("до 2 км"))
+        assertEquals("более пяти килограммов", n("более 5 кг"))
+        assertEquals("от одного километра", n("от 1 км"))
+        assertEquals("около трёх минут", n("около 3 мин"))
+        assertEquals("около двадцати одной минуты", n("около 21 мин"))
+        assertEquals("около пятисот рублей", n("около 500 рублей"))
+    }
+
+    @Test fun yearWithGenitiveTriggerStaysOrdinal() {
+        assertEquals("до тысяча девятьсот семнадцатого года", n("до 1917 года"))
+    }
+
+    @Test fun noTriggerStaysAsBefore() {
+        assertEquals("дом пять", n("дом 5"))
+    }
+
+    @Test fun casesThroughPrepare() {
+        assertEquals("около пятисот рублей", p("около 500 рублей"))
+        assertEquals("в пяти случаях", p("в 5 случаях"))
+    }
+
+    // «-ьми» — неправильный творительный мн. ч. («детьми», «людьми»), число тоже в Т.п.,
+    // а не «две»/«двадцать две» по хвосту на «-и».
+    @Test fun irregularInstrumentalPluralEnding() {
+        assertEquals("с пятью детьми", n("с 5 детьми"))
+        assertEquals("с двумя детьми", n("с 2 детьми"))
+        assertEquals("были заняты двумя детьми", n("были заняты 2 детьми"))
+        assertEquals("двадцатью двумя людьми", n("22 людьми"))
+        assertEquals("четырьмя лошадьми", n("4 лошадьми"))
+    }
+
+    @Test fun unitAfterDativeTrigger() {
+        assertEquals("к пяти километрам", n("к 5 км"))
+        assertEquals("к одной минуте", n("к 1 мин"))
+        assertEquals("к двум килограммам", n("к 2 кг"))
+    }
+
+    @Test fun unitAfterPrepositionalTrigger() {
+        assertEquals("при пяти километрах в час", n("при 5 км/ч"))
+        assertEquals("о трёх минутах", n("о 3 мин"))
+    }
+
+    @Test fun unitInInstrumentalRange() {
+        assertEquals("между двумя и пятью километрами", n("между 2 и 5 км"))
+        assertEquals("между одной и тремя минутами", n("между 1 и 3 мин"))
+    }
+
+    @Test fun unitInGenitiveRange() {
+        assertEquals("с двух до пяти километров", n("с 2 до 5 км"))
+        assertEquals("от двух до пяти километров", n("от 2 до 5 км"))
+        assertEquals("от одной до трёх минут", n("от 1 до 3 мин"))
+    }
+
+    // «день + месяц» без точек («к 1 сентября») — не дата в формате dd.mm, cases() её не трогает
+    // (иначе дательный «одному»), порядковое строит dayMonth() по предлогу.
+    @Test fun dayAndMonthWithoutDotsIsOrdinal() {
+        assertEquals("к первому сентября", n("к 1 сентября"))
+        assertFalse(n("к 1 сентября").contains("одному"))
+        assertEquals("к первому июля", n("к 1 июля"))
+    }
+}

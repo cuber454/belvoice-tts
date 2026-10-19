@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Строка профиля: выбор (радио с именем), «Переименовать», «Удалить» (у «Основного» скрыта),
+     под ними — у выбранного «Изменения сохраняются автоматически», затем «Привязать к голосу»
+     (или голос, к которому привязан). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingVertical="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/profileName"
+            android:saveEnabled="false"
+            android:minHeight="48dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <Button android:id="@+id/profileRename" style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/profile_rename" />
+        <Button android:id="@+id/profileDelete" style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/delete" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/profileAutosave"
+        android:visibility="gone"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="0dp"
+        style="@style/SectionHint"
+        android:text="@string/profile_autosave" />
+    <Button android:id="@+id/profileBind" style="@style/Widget.Material3.Button.TextButton"
+        android:layout_marginStart="24dp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/profile_bind" />
+</LinearLayout>

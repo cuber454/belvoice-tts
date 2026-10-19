@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Тумблеры правил добавляет RulesFragment по Rules.KEYS (item_rule.xml на каждый), здесь
+     каркас, поле длины куска и прямая речь в конце. -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Поиск по названиям и подписям правил: строки и заголовки без совпадений прячутся,
+             «Найдено: N» — живая область, TalkBack читает её сам после набора. -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/rulesFilterBox"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/rules_search"
+            app:startIconDrawable="@android:drawable/ic_menu_search"
+            app:endIconMode="clear_text">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/rulesFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/rulesFound"
+            style="@style/SectionHint"
+            android:accessibilityLiveRegion="polite"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/rulesHint"
+            style="@style/SectionHint"
+            android:text="@string/rules_hint" />
+
+        <LinearLayout
+            android:id="@+id/rulesList"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Длина куска: на странице «Английский» (RulesFragment.ARG_ENGLISH) скрыта -->
+        <LinearLayout
+            android:id="@+id/chunkBlock"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            style="@style/Section"
+            android:text="@string/rules_section_chunk" />
+        <TextView
+            style="@style/SectionHint"
+            android:text="@string/max_len_hint" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/max_len"
+            app:suffixText="@string/chars_suffix">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/maxLen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/sr_max_len"
+            app:suffixText="@string/chars_suffix">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/srMaxLen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Прямая речь — отдельно от правил, в самом низу (перенесена с вкладки «Голос»). На странице
+             «Английский» скрыта. quoteHead/quoteBody — строки поиска по настройкам (RulesFragment.filter). -->
+        <LinearLayout
+            android:id="@+id/quoteBlock"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/quoteHead"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            style="@style/Section"
+            android:text="@string/section_quote" />
+        <TextView
+            style="@style/SectionHint"
+            android:text="@string/section_quote_hint" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/quoteBody"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/quoteOn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:saveEnabled="false"
+            android:text="@string/quote_on" />
+
+        <LinearLayout
+            android:id="@+id/quoteGroup"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/quote_voice">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/quoteVoice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:saveEnabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+            <TextView
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/quote_rate" />
+            <TextView
+                android:id="@+id/quoteRateValue"
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="×1.00" />
+        </LinearLayout>
+        <com.google.android.material.slider.Slider
+            android:id="@+id/quoteRate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.5"
+            android:valueTo="2.0"
+            android:stepSize="0.05"
+            app:tickVisible="false"
+            app:labelBehavior="floating" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/quote_pitch" />
+            <TextView
+                android:id="@+id/quotePitchValue"
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="×1.00" />
+        </LinearLayout>
+        <com.google.android.material.slider.Slider
+            android:id="@+id/quotePitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.5"
+            android:valueTo="2.0"
+            android:stepSize="0.05"
+            app:tickVisible="false"
+            app:labelBehavior="floating" />
+        </LinearLayout>
+        </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

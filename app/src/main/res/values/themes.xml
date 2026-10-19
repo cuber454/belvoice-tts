@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3, светлая/тёмная по системе; на Android 12+ поверх накладываются
+         динамические цвета (DynamicColors в SettingsActivity). Прозрачность системных
+         баров и цвет их значков ставит enableEdgeToEdge() там же. -->
+    <style name="Theme.RuVoice" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.RuVoice.Dialog</item>
+    </style>
+
+    <!-- Диалоги почти во всю ширину: у Material3 по 16dp от краёв экрана плюс 24dp внутри — на крупном шрифте
+         чипы ударений не влезали. -->
+    <style name="ThemeOverlay.RuVoice.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="alertDialogStyle">@style/RuVoice.Dialog</item>
+    </style>
+    <!-- backgroundInset* MaterialAlertDialogBuilder читает из alertDialogStyle, в теме их не видит. -->
+    <style name="RuVoice.Dialog" parent="MaterialAlertDialog.Material3">
+        <item name="backgroundInsetStart">2dp</item>
+        <item name="backgroundInsetEnd">2dp</item>
+        <item name="backgroundInsetTop">16dp</item>
+        <item name="backgroundInsetBottom">16dp</item>
+    </style>
+</resources>

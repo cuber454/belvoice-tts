@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/rules"
+        android:title="@string/rules_title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/english"
+        android:title="@string/english_title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/export_settings"
+        android:title="@string/export_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/import_settings"
+        android:title="@string/import_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/voice_packs"
+        android:title="@string/voice_packs"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/setup_help"
+        android:title="@string/setup_title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/troubleshoot"
+        android:title="@string/troubleshoot_title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/ui_settings"
+        android:title="@string/ui_title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/about"
+        android:title="@string/about_title"
+        app:showAsAction="never" />
+</menu>

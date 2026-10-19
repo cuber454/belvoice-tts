@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- У выпадающих полей saveEnabled=false: значение ставит load() из Prefs, а восстановленный
+     системой текст запускал бы фильтр AutoCompleteTextView и список сжимался бы до одного пункта. -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/setupHelp"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            style="@style/SectionHint"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:paddingVertical="4dp"
+                android:minHeight="48dp"
+                android:gravity="center_vertical"
+            android:textColor="?attr/colorPrimary"
+            android:text="@string/setup_link" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/voice">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/voice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:saveEnabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/sample_rate">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/sampleRate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:saveEnabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            style="@style/Section"
+            android:text="@string/section_rate_pitch" />
+        <TextView
+            style="@style/SectionHint"
+            android:text="@string/section_rate_pitch_hint" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/quote_rate" />
+            <TextView
+                android:id="@+id/rateValue"
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="×1.00" />
+        </LinearLayout>
+        <com.google.android.material.slider.Slider
+            android:id="@+id/rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.5"
+            android:valueTo="2.0"
+            android:stepSize="0.05"
+            app:tickVisible="false"
+            app:labelBehavior="floating" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/quote_pitch" />
+            <TextView
+                android:id="@+id/pitchValue"
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="×1.00" />
+        </LinearLayout>
+        <com.google.android.material.slider.Slider
+            android:id="@+id/pitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.5"
+            android:valueTo="2.0"
+            android:stepSize="0.05"
+            app:tickVisible="false"
+            app:labelBehavior="floating" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/volume" />
+            <TextView
+                android:id="@+id/volumeValue"
+                style="?attr/textAppearanceBodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="×1.00" />
+        </LinearLayout>
+        <com.google.android.material.slider.Slider
+            android:id="@+id/volume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.5"
+            android:valueTo="3.0"
+            android:stepSize="0.05"
+            app:tickVisible="false"
+            app:labelBehavior="floating" />
+
+        <TextView
+            style="@style/Section"
+            android:text="@string/section_system" />
+        <TextView
+            style="@style/SectionHint"
+            android:text="@string/section_system_hint" />
+
+        <TextView
+            android:id="@+id/sysValues"
+            style="?attr/textAppearanceBodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/sysTtsSettings"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/sys_tts_settings" />
+
+        <TextView
+            style="@style/Section"
+            android:text="@string/section_preview" />
+
+        <include layout="@layout/preview_box" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

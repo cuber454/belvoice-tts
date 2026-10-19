@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Вкладка «Профили»: список (item_profile.xml на каждый) и «Добавить». -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/Section"
+            android:layout_marginTop="0dp"
+            android:text="@string/section_profiles" />
+        <TextView
+            style="@style/SectionHint"
+            android:text="@string/section_profiles_hint" />
+
+        <RadioGroup
+            android:id="@+id/profilesList"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/profileAdd"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/profile_add" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
