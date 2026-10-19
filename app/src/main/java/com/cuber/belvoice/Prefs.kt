@@ -7,8 +7,8 @@ import com.cuber.belvoice.text.Replacements
 import com.cuber.belvoice.text.Rules
 
 class Prefs(private val context: Context) {
-    private val p = context.getSharedPreferences("ruvoice", Context.MODE_PRIVATE)
-    var voice: String get() = p.getString("voice", "xenia")!!; set(v) = p.edit().putString("voice", v).apply()
+    private val p = context.getSharedPreferences("belvoice", Context.MODE_PRIVATE)
+    var voice: String get() = p.getString("voice", Speaker.DEFAULT)!!; set(v) = p.edit().putString("voice", v).apply()
     var sampleRate: Int get() = p.getInt("sr", 48000); set(v) = p.edit().putInt("sr", v).apply()
     var sentencePauseMs: Int get() = p.getInt("pause_sentence", 0); set(v) = p.edit().putInt("pause_sentence", v).apply()
     var paragraphPauseMs: Int get() = p.getInt("pause_paragraph", 300); set(v) = p.edit().putInt("pause_paragraph", v).apply()

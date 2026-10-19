@@ -165,7 +165,7 @@ object BelNormalizer {
         Form.LOC -> loc
     }
 
-    private val YEAR_RE = Regex("(\\d{3,4})\\s*(год|года|годзе|гадах|гадоў|год)\\b", RegexOption.IGNORE_CASE)
+    private val YEAR_RE = Regex("(\\d{3,4})\\s*(год|года|годзе|гадах|гадоў)(?![а-яёіў])", RegexOption.IGNORE_CASE)
     private val DIGIT_GROUP_RE = Regex("\\d[\\d\\s\\u00A0\\u202F]*\\d|\\d")
 
     /** Число словами: 0–999 999 999; с годом — порядковым и в нужном падеже. */
@@ -190,7 +190,6 @@ object BelNormalizer {
     /** Итоговая подготовка: числа, знаки, фильтр по таблице символов модели. */
     fun prepare(text: String, allowed: String): String {
         var s = text.lowercase()
-        s = s.replace('ё', 'ё')                       // на случай других раскладок «ё» не трогаем
         s = s.replace(Regex("[’'`´ʼ]"), "")           // апостроф в таблице символов отсутствует
         s = numberWords(s)
         s = s.replace('!', '.')                        // «!» модель не получает (служебный символ)
