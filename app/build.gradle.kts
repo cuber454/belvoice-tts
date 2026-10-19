@@ -11,6 +11,9 @@ val localProps = Properties().apply { rootProject.file("local.properties").takeI
 android {
     namespace = "com.cuber.belvoice"
     compileSdk = 35
+    // путь к NDK: без него AGP не стрипует .so и в APK едут символы (+20-25 МБ)
+    ndkVersion = "30.0.16248370"
+    ndkPath = "C:/AndroidSDK/ndk/30.0.16248370"
     defaultConfig {
         applicationId = "com.cuber.belvoice"
         minSdk = 23
@@ -51,7 +54,7 @@ android {
     androidResources {
         noCompress += listOf("ptl", "pte", "json", "bin")
         // silero_ru.json и eyo_safe.txt в APK не нужны: приложение читает собранный из них stress.bin (задача stressBin)
-        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!silero_be.json:!eyo_be.txt"
+        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!silero_be.json:!eyo_be.txt:!silero_ru.json:!eyo_safe.txt:!morph.bin:!hard_e.txt:!emoji_ru.tsv:!symbols_ru.tsv"
     }
     testOptions { unitTests.isReturnDefaultValues = true }
     // libfbjni/libc++_shared есть и в pytorch_android_lite, и в executorch; из lite годятся обоим
