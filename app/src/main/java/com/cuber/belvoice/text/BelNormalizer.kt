@@ -187,9 +187,10 @@ object BelNormalizer {
         return s
     }
 
-    /** Итоговая подготовка: числа, знаки, фильтр по таблице символов модели. */
+    /** Итоговая подготовка: латиница, числа, знаки, фильтр по таблице символов модели. */
     fun prepare(text: String, allowed: String): String {
-        var s = text.lowercase()
+        // латиницы в таблице символов модели нет вовсе — «FilmBell» раньше просто выпадало
+        var s = Latin.translate(text).lowercase()
         s = s.replace(Regex("[’'`´ʼ]"), "")           // апостроф в таблице символов отсутствует
         s = numberWords(s)
         s = s.replace('!', '.')                        // «!» модель не получает (служебный символ)
