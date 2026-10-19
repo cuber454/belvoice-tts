@@ -19,3 +19,8 @@ docs/
 dist/
 tools/*.zip
 *.apk
+
+# исходный словарь ударений (47 МБ), в git не храним: берётся из build/bel-stress-diff.txt
+bel.dic
+build/
+
