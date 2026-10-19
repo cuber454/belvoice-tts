@@ -10,7 +10,7 @@ class Speaker(val name: String, val pack: Pack?, val id: Int, val sym: Symbols, 
     companion object {
         const val DEFAULT = "bel_larisa"
         /** Пак штатной модели для сборки lite: голые имена («xenia» из старых prefs) ищем в нём. */
-        const val RU_PACK = "ru"
+        const val LITE_PACK = "cis_be"
         /** Есть ли модель в APK (сборка full). Тесты подменяют. */
         var builtin = BuildConfig.BUILTIN_MODEL
         private fun packName(pack: Pack, speaker: String) = "${pack.id}/$speaker"
@@ -21,7 +21,7 @@ class Speaker(val name: String, val pack: Pack?, val id: Int, val sym: Symbols, 
             val i = name.indexOf('/')
             if (i < 0) {
                 if (builtin) return d.speakers[name]?.let { Speaker(name, null, it, d.sym, d.types, d.bases) }
-                return packs.firstOrNull { it.id == RU_PACK }?.let { of(it, name) }
+                return packs.firstOrNull { it.id == LITE_PACK }?.let { of(it, name) }
             }
             val pack = packs.firstOrNull { it.id == name.substring(0, i) } ?: return null
             return of(pack, name.substring(i + 1))
@@ -39,7 +39,7 @@ class Speaker(val name: String, val pack: Pack?, val id: Int, val sym: Symbols, 
         fun exists(name: String?, builtinNames: Set<String>, packs: List<Pack>): Boolean {
             if (name == null) return false
             val i = name.indexOf('/')
-            if (i < 0) return if (builtin) name in builtinNames else packs.firstOrNull { it.id == RU_PACK }?.speakers?.containsKey(name) == true
+            if (i < 0) return if (builtin) name in builtinNames else packs.firstOrNull { it.id == LITE_PACK }?.speakers?.containsKey(name) == true
             return packs.firstOrNull { it.id == name.substring(0, i) }?.speakers?.containsKey(name.substring(i + 1)) == true
         }
 

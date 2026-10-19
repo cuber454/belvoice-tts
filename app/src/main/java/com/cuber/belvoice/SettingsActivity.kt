@@ -433,7 +433,7 @@ class SettingsActivity : AppCompatActivity() {
                         Packs.delete(filesDir, p.id)
                         // голос удалённого пака — на штатный; save фрагмента после этого его не вернёт (окно пересоздаётся).
                         // Пак ru в full (после lite) — те же голоса встроены: «ru/aidar» → «aidar», не на xenia.
-                        val same = Speaker.builtin && p.id == Speaker.RU_PACK
+                        val same = Speaker.builtin && p.id == Speaker.LITE_PACK
                         if (prefs.voice.startsWith(p.id + "/")) prefs.voice = if (same) prefs.voice.substringAfter('/') else Speaker.DEFAULT
                         if (prefs.quoteVoice.startsWith(p.id + "/")) prefs.quoteVoice = if (same) prefs.quoteVoice.substringAfter('/') else ""
                         refreshPages(getString(R.string.pack_deleted))

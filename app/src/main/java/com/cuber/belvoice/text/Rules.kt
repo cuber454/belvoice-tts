@@ -50,7 +50,7 @@ class Rules(val off: Set<String> = emptySet(), val maxLen: Int = MAX_LEN_DEFAULT
         /** Длина первого куска запроса при fast_start, ~5 с звука. */
         const val FAST_START_LEN = 100
         // focus_embedding модели — 4 строки (0..3), как intensity в apply_tts
-        const val FOCUS_DEFAULT = 3
+        const val FOCUS_DEFAULT = 2   // для белорусской сборки это и сила интонации вопроса/восклицания
         const val FOCUS_MIN = 1
         const val FOCUS_MAX = 3
 

@@ -126,22 +126,6 @@ class RulesOffTest {
 
     /** «моя» — омограф из homodict (мо+я/м+оя): полный путь замены → Stress со системными словарями: местоимение из
      * словаря ударений, деепричастие — фразой из словаря замен (preset защищает от userDictPass). */
-    @Test fun systemDictMoya() {
-        val root = TestData.root()
-        val stress = java.io.File(root, "app/src/main/assets/dicts/stress/Системный.txt").readLines().mapNotNull { DictLines.parseStress(it) }.toMap()
-        val repl = Replacements.parse(java.io.File(root, "app/src/main/assets/dicts/replace/Системный.txt").readLines())
-        // омографы решает «первый вариант по алфавиту» — для «моя» это «м+оя», так что верное чтение даёт только фраза
-        val firstHomo = object : StressModels {
-            override fun accentor(words: List<String>) = firstVowel.accentor(words)
-            override fun homo(ids: List<LongArray>, starts: LongArray, ends: LongArray) = FloatArray(ids.size) { 0.1f }
-        }
-        val st = Stress(d, firstHomo, stress, off("gram"))
-        assertEquals("+это м+оя ж+изнь.", st.apply("это моя жизнь."))
-        assertEquals("+это мо+я ж+изнь.", st.apply(repl.apply("это моя жизнь.")))
-        assertEquals("+он ст+оял, м+оя п+осуду.", st.apply(repl.apply("он стоял, моя посуду.")))
-        assertEquals("+он ст+оял, м+оя г+олову.", st.apply(repl.apply("он стоял, моя голову.")))
-        assertTrue(st.apply(repl.apply("сказали, что эта каюта теперь моя, показали, как с помощью")).contains(" мо+я,"))
-    }
 
     /** Имена из Википедии через «е» не перебивают нарицательные с «ё»: «К+отел» — город, «котел» в книге — «котёл»
      * (отчёт пользователя 02.10.2026, tools/wiki_names.py). */

@@ -322,7 +322,7 @@ class SileroTtsService : TextToSpeechService() {
     private fun packOf(name: String): Pack? {
         val i = name.indexOf('/')
         if (i >= 0) return packs().firstOrNull { it.id == name.substring(0, i) }
-        return if (Speaker.builtin) null else packs().firstOrNull { it.id == Speaker.RU_PACK }
+        return if (Speaker.builtin) null else packs().firstOrNull { it.id == Speaker.LITE_PACK }
     }
 
     /** Снятие foreground после простоя — отдельно от выгрузки моделей: та может быть выключена

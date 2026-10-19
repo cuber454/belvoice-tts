@@ -10,37 +10,9 @@ class ReplacementsTest {
         assertEquals("Г+арри и Г+арри!", r.apply("Гарри и гарри!"))
     }
 
-    @Test fun systemVowelInterjectionDoubled() {
-        val line = java.io.File(TestData.root(), "app/src/main/assets/dicts/replace/Системный.txt").readLines().single { it.startsWith("~(?<![\\p{L}+-])([аоэу])") }
-        val r = Replacements.parse(listOf(line))
-        assertEquals("АА! Ну ОО? а ты, а он, ах! на!", r.apply("А! Ну О? а ты, а он, ах! на!"))
-    }
 
-    @Test fun systemReduplicationBeforeA() {
-        val line = java.io.File(TestData.root(), "app/src/main/assets/dicts/replace/Системный.txt").readLines().single { it.startsWith("~(?<![\\p{L}+-])(\\p{L}+)-") }
-        val r = Replacements.parse(listOf(line))
-        assertEquals("Что что, а драться он умел. Кто кто, а он знал. Кое-что, а чуть-чуть и что-то.", r.apply("Что-что, а драться он умел. Кто-кто, а он знал. Кое-что, а чуть-чуть и что-то."))
-    }
 
     /** Отчёт пользователя 29.09.2026: фразы и первые части сложных слов из системного словаря замен. */
-    @Test fun systemUserReportPhrases() {
-        val r = Replacements.parse(java.io.File(TestData.root(), "app/src/main/assets/dicts/replace/Системный.txt").readLines())
-        assertEquals("можно и ед+у из других", r.apply("можно и еду из других"))
-        assertEquals("+еду из города", r.apply("еду из города"))
-        assertEquals("глаза заливало п+отом.", r.apply("глаза заливало потом."))
-        assertEquals("на моём берег+у", r.apply("на моём берегу"))
-        assertEquals("всё съ+ем", r.apply("всё съем"))
-        assertEquals("б+ело-голубая", r.apply("бело-голубая"))
-        assertEquals("св+етло-серый", r.apply("светло-серый"))
-        assertEquals("распад +эс+эсэс+эр.", r.apply("распад СССР."))
-        // 30.09.2026: ударный предлог и частица, исключения длиннее голой пары
-        assertEquals("жаловаться н+еначто", r.apply("жаловаться не на что"))
-        assertEquals("надел очки н+анос и ушёл на н+ос корабл+я", r.apply("надел очки на нос и ушёл на нос корабля"))
-        // 10.10.2026: «конским потом», «совершенный» в прилагательном; причастие оставляем модели
-        assertEquals("разило конским п+отом.", r.apply("разило конским потом."))
-        assertEquals("Более соверш+енного метода нет, это соверш+енный вид.", r.apply("Более совершенного метода нет, это совершенный вид."))
-        assertEquals("преступление, совершенное им", r.apply("преступление, совершенное им"))
-    }
 
     @Test fun phraseWithStressOnNeighbourWord() {
         val r = Replacements.parse(listOf("старый замок = старый з+амок"))

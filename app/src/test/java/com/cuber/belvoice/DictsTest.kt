@@ -109,44 +109,19 @@ class DictsTest {
     }
 
     @Test fun systemDictsFromAssetsParse() {
-        // ударения: «слово сл+ово»; замены: «фраза = фраза с ударением», слово с «+» входит в ключ (ё-вариант — «все же = вс+ё же»)
+        // белорусский системный словарь ударений: «слово сл+ово», ровно одна метка «+»
         val stress = TestData.root().resolve("app/src/main/assets/dicts/stress/Системный.txt").readLines()
         val parsed = stress.mapNotNull { DictLines.parseStress(it) }
-        assertTrue(parsed.size > 20000)
-        // имена с «ё» и через «е»: «федоров ф+ёдоров»; из библиотеки — и твёрдое «э»: «малдер м+алдэр» (словарь подменяет буквы слова)
-        fun e(s: String) = s.replace('ё', 'е').replace('э', 'е')
-        assertTrue(parsed.all { (w, v) -> e(v.replace("+", "")) == e(w) && v.count { it == '+' } == 1 })
-        val stressMap = parsed.toMap()   // выход нормализатора («около 300 рублей», «300-й»): модель читает «тр+ёхсот», норма «трёхс+от»
-        assertEquals("м+алдэр", stressMap["малдер"]); assertEquals("трёхк+омнатную", stressMap["трехкомнатную"]); assertEquals("трёхк+омнатную", stressMap["трёхкомнатную"])
-        assertEquals("трёхс+от", stressMap["трёхсот"]); assertEquals("четырёхс+отый", stressMap["четырёхсотый"]); assertEquals("трехт+ысячного", stressMap["трехтысячного"])
+        assertTrue("словарь слишком мал: ${parsed.size}", parsed.size > 20000)
+        assertTrue(parsed.all { (w, v) -> v.replace("+", "") == w && v.count { it == '+' } == 1 })
+        val stressMap = parsed.toMap()
+        // поправки к акцентору из bel.dic — там, где нейросеть ошибается
+        assertEquals("+адраса", stressMap["адраса"])
+        assertEquals("+актавага", stressMap["актавага"])
+        assertEquals("крас+ы", stressMap["красы"])
+        // словарь замен белорусской сборки пуст: правила не должны ничего менять
         val replace = TestData.root().resolve("app/src/main/assets/dicts/replace/Системный.txt").readLines()
-        val r = Replacements.parse(replace)
-        val phrases = replace.dropWhile { !it.startsWith("# Фразы-подсказки") }   // выше — сложные слова и орфоэпия («гм = гмм»)
-        val pairs = phrases.takeWhile { !it.startsWith("# Ударение на предлоге") }.mapNotNull { Replacements.split(it) }
-        assertTrue(pairs.size > 5000)
-        assertTrue(pairs.filter { '*' !in it.first }.all { (k, v) -> v.replace("+", "").replace('ё', 'е') == k.replace('ё', 'е').removePrefix("$") && v.count { it == '+' } in 1..2 })
-        // ударение на предлоге: предлог слеплен со следующим словом («н+абок»), иначе оба звучат ударно
-        val clitic = phrases.dropWhile { !it.startsWith("# Ударение на предлоге") }.mapNotNull { Replacements.split(it) }
-        assertTrue(clitic.size > 100)
-        assertTrue(clitic.all { (k, v) -> v.replace("+", "").replace(" ", "") == k.replace(" ", "") && v.split(" ").any { it.length > 1 && it.indexOf('+') in 0..3 && ' ' !in it } })
-        assertEquals("Он н+ебыл дома и ворочался с б+оку н+абок.", r.apply("Он не был дома и ворочался с боку на бок."))
-        assertEquals("Сражаться н+ескем, спросить н+еского.", r.apply("Сражаться не с кем, спросить не с кого."))
-        assertEquals("Корабль спустили н+аводу, а он сидел н+огу н+аногу.", r.apply("Корабль спустили на воду, а он сидел ногу на ногу."))   // маска «*» в ключе и замене
-        assertEquals("Амбарный зам+ок висел", r.apply("Амбарный замок висел"))
-        // eugene в начале предложения глотает «с» у «спокойн…», с тире — нет
-        assertEquals("— Спокойное лицо. Он ушёл... — спокойно, спокойно.", r.apply("Спокойное лицо. Он ушёл... спокойно, спокойно."))
-        assertEquals("— Спокойный вечер, успокойся.", r.apply("— Спокойный вечер, успокойся."))
-        assertEquals("— Спокойной н+очи. — Спокойно н+ачал.", r.apply("Спокойной ночи. Спокойно начал."))   // фраза-подсказка и тире вместе
-        assertEquals("в+олны силы из-под земл+и и новые з+емли", r.apply("волны силы из-под земли и новые земли"))
-        assertEquals("опыт Толст+ого и толстого кота", r.apply("опыт Толстого и толстого кота")) // «$» — только с заглавной
-        assertEquals("тёмно-зеленый и темно", r.apply("темно-зеленый и темно"))
-        // дефисные из Balamoote (tools/hyphen_first.txt): первая часть «медико-*» и слово целиком; отдельно «медико» не трогаем
-        assertEquals("М+едико-биологический, м+ало-м+альски, всего-н+авсего, медико", r.apply("Медико-биологический, мало-мальски, всего-навсего, медико"))
-        assertEquals("водяные пар+ы и позитронные п+ары", r.apply("водяные пары и позитронные пары"))
-        assertEquals("ут+ёсный паук возбужд+ённее", r.apply("утесный паук возбужденнее"))
-        assertEquals("гмм, тест и тенденции, стоят д+орога", r.apply("гм, тест и тенденции, стоят дорого"))   // [тэ] — в HardE после акцентора
-        assertEquals("нар+ошно я+ишницу для Марьи Иль+инишны, ништ+о и ничтожный", r.apply("нарочно яичницу для Марьи Ильиничны, ничто и ничтожный"))   // [шн], где модель читает [чн]
-        assertEquals("ков+ото, всев+ото и ев+ото, но много-то и кого", r.apply("Кого-то, всего-то и его-то, но много-то и кого"))   // [в] перед частицей
+        assertEquals("тэкст з прыкладам", Replacements.parse(replace).apply("тэкст з прыкладам"))
     }
 
     @Test fun filesAreSortedByRussianCollation() {

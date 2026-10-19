@@ -42,6 +42,8 @@ def parse():
                     bad.append(line)
                 continue
             word = parts[0].strip().lower()
+            if " " in word:          # ключ словаря ударений — одно слово
+                continue
             marked = parts[1].strip()
             if "´" not in marked:
                 if len(bad) < 5:
